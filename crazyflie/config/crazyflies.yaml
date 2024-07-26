@@ -1,8 +1,8 @@
 # named list of all robots
 robots:
-  cf231:
+  cf2:
     enabled: true
-    uri: radio://0/80/2M/E7E7E7E7E7
+    uri: radio://0/125/2M/E7E7E7E702
     initial_position: [0.0, 0.0, 0.0]
     type: cf21  # see robot_types
     # firmware_params:
@@ -14,21 +14,50 @@ robots:
     #     topic_name3: 
     #       frequency: 1
     #       vars: ["acc.x", "acc.y"]
-  cf5:
-    enabled: false
-    uri: radio://0/80/2M/E7E7E7E705
-    initial_position: [0.0, -0.5, 0.0]
+  cf6:
+    enabled: true
+    uri: radio://0/125/1M/E7E7E7E706
+    initial_position: [ 0.0, 0.5, 0.0 ]
     type: cf21  # see robot_types
     # firmware_params:
     #   kalman:
     #     pNAcc_xy: 1.0 # default 0.5
-    #firmware_logging:
-    #  custom_topics:
-    #    topic_name3: 
-    #      frequency: 1
-    #      vars: ["acc.x", "acc.y", "acc.z"]
+    # firmware_logging:
+    #   enabled: true
+    #   custom_topics:
+    #     topic_name3:
+    #       frequency: 1
+    #       vars: ["acc.x", "acc.y"]
+  cf8:
+    enabled: true
+    uri: radio://0/100/2M/E7E7E7E708
+    initial_position: [ 0.0, -0.5, 0.0 ]
+    type: cf21  # see robot_types
+    # firmware_params:
+    #   kalman:
+    #     pNAcc_xy: 1.0 # default 0.5
+    # firmware_logging:
+    #   enabled: true
+    #   custom_topics:
+    #     topic_name3:
+    #       frequency: 1
+    #       vars: ["acc.x", "acc.y"]
+
+  go1:
+    enabled: true
+    initial_position: [ 0.0, 0.0, 0.0 ]
+    type: dogo  # see robot_types
+    id: 200
+
 # Definition of the various robot types
 robot_types:
+  dogo:
+    connection: none
+    motion_capture:
+      enabled: true
+      marker: default_single_marker
+      dynamics: default
+
   cf21:
     motion_capture:
       enabled: true
@@ -89,6 +118,8 @@ all:
   # firmware parameters for all drones (use robot_types/type_name to set per type, or
   # robots/drone_name to set per drone)
   firmware_params:
+    colAv:
+      enable: 1
     commander:
       enHighLevel: 1
     stabilizer:

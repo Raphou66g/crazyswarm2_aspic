@@ -27,6 +27,17 @@ import rclpy.node
 import rowan
 from std_srvs.srv import Empty
 
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import (
+    Point,
+    Pose,
+    PoseWithCovariance,
+    Quaternion,
+    Twist,
+    TwistWithCovariance,
+    Vector3,
+)
+
 
 def arrayToGeometryPoint(a):
     result = Point()
@@ -810,6 +821,32 @@ class CrazyflieServer(rclpy.node.Node):
             FullState, 'all/cmd_full_state', 1)
         self.cmdFullStateMsg = FullState()
         self.cmdFullStateMsg.header.frame_id = '/world'
+        
+        # - - - - - - #
+        # Stage ASPIC 2024 - Dogs&Flies
+        self.modo_x:float = 0.0
+        self.modo_y:float = 0.0
+        self.modo_z:float = 0.4
+        def listener_callback(msg: Odometry):
+            """Action at the reception of a ROS2 message
+
+            :param msg: (Odometry) message received from the GO1
+            """
+            poseWC: PoseWithCovariance = msg.pose
+            pose: Pose = poseWC.pose
+            self.modo_x, self.modo_y, self.modo_z = (
+                pose.position.x,
+                pose.position.y,
+                pose.position.z,
+            )
+            orient = pose.orientation
+            # twistWC: TwistWithCovariance = msg.twist
+            # twist: Twist = twistWC.twist
+            # self.twistL = twist.linear
+            # self.twistA = twist.angular
+            print(self.modo_x, self.modo_y, self.modo_z, orient)  # , self.twistL, self.twistA)
+        self.modoSubscriber = self.create_subscription(Odometry, "odom", listener_callback, 10)
+        # - - - - - - #
 
         cfnames = []
         for srv_name, srv_types in self.get_service_names_and_types():
@@ -862,7 +899,7 @@ class CrazyflieServer(rclpy.node.Node):
                 break
         self.paramTypeDict = allParamTypeDicts['all']
 
-        self.crazyflies = []
+        self.crazyflies : list[Crazyflie] = []
         self.crazyfliesById = {}
         self.crazyfliesByName = {}
         for cfname in cfnames:
